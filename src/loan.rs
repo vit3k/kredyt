@@ -6,12 +6,12 @@ use crate::utils::format_currency;
 pub struct InstallmentInfo {
     pub installment_number: u32,
     pub installment_amount: f64,
-    pub interest_rate: f64,
+    // pub interest_rate: f64,
     pub interest: f64,
     pub principal: f64,
-    pub overpayment: f64,
-    pub remaining_balance: f64,
-    pub date: Option<NaiveDate>,
+    // pub overpayment: f64,
+    // pub remaining_balance: f64,
+    // pub date: Option<NaiveDate>,
 }
 
 // #[derive(Debug)]
@@ -77,13 +77,9 @@ pub fn simulate_loan(
     // let mut interest_rate_changes: Vec<InterestRateChange> = Vec::new();
     let mut actual_installment_count = 0;
     for current_installment in 1..=installment_count {
-        if current_installment % decrease_frequency == 0
-            && interest_rate_decrease != 0.0
-            && current_interest_rate > minimum_interest_rate
-        {
-            let old_interest_rate = current_interest_rate;
-            current_interest_rate =
-                minimum_interest_rate.max(current_interest_rate - interest_rate_decrease);
+        if current_installment % decrease_frequency == 0 && interest_rate_decrease != 0.0 && current_interest_rate > minimum_interest_rate {
+            // let old_interest_rate = current_interest_rate;
+            current_interest_rate = minimum_interest_rate.max(current_interest_rate - interest_rate_decrease);
             r = current_interest_rate / 100.0 / 12.0;
             let remaining_installments = installment_count - current_installment + 1;
             installment = calculate_annuity_payment(current_balance, r, remaining_installments);
@@ -106,12 +102,12 @@ pub fn simulate_loan(
         let installment_info = InstallmentInfo {
             installment_number: current_installment,
             installment_amount: installment,
-            interest_rate: current_interest_rate,
+            // interest_rate: current_interest_rate,
             interest,
             principal,
-            overpayment,
-            remaining_balance: current_balance,
-            date: Some(start_date + Months::new(current_installment - 1)),
+            // overpayment,
+            // remaining_balance: current_balance,
+            // date: Some(start_date + Months::new(current_installment - 1)),
         };
 
         installments.push(installment_info);
@@ -171,8 +167,7 @@ pub fn compare_simulations(
     );
 
     let interest_savings = without_overpayments.total_interest - with_overpayments.total_interest;
-    let reduction_months =
-        without_overpayments.actual_installment_count - with_overpayments.actual_installment_count;
+    let reduction_months = without_overpayments.actual_installment_count - with_overpayments.actual_installment_count;
     let total_overpayment = initial_overpayment * with_overpayments.actual_installment_count as f64;
 
     SimulationComparison {
@@ -188,28 +183,13 @@ pub fn compare_simulations(
 pub fn display_simulation_result(result: &SimulationResult, title: &str) {
     println!("=== {} ===", title);
     println!("Kwota kredytu: {} zł", format_currency(result.loan_amount));
-    println!(
-        "Nadpłata miesięczna: {} zł",
-        format_currency(result.monthly_overpayment)
-    );
-    println!(
-        "Rzeczywista liczba rat: {}",
-        result.actual_installment_count
-    );
-    println!(
-        "Czas kredytu: {} lat {} miesięcy",
-        result.loan_duration_years, result.loan_duration_months
-    );
+    println!("Nadpłata miesięczna: {} zł", format_currency(result.monthly_overpayment));
+    println!("Rzeczywista liczba rat: {}", result.actual_installment_count);
+    println!("Czas kredytu: {} lat {} miesięcy", result.loan_duration_years, result.loan_duration_months);
     println!("Data zakończenia: {}", result.end_date.format("%d.%m.%Y"));
-    println!(
-        "Początkowe oprocentowanie: {:.2}%",
-        result.initial_interest_rate
-    );
+    println!("Początkowe oprocentowanie: {:.2}%", result.initial_interest_rate);
     println!("Końcowe oprocentowanie: {:.2}%", result.final_interest_rate);
-    println!(
-        "Suma odsetek: {} zł",
-        format_currency(result.total_interest)
-    );
+    println!("Suma odsetek: {} zł", format_currency(result.total_interest));
 
     // Display first and last 3 installments
     println!("\nPierwsze 3 raty:");

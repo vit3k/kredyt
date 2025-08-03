@@ -11,6 +11,9 @@ fn main() {
     let annual_interest_rate = 6.20;
     let installment_count = 12 * 30;
     let overpayment = 5000.0;
+    let interest_rate_decrease = 0.5;
+    let minimum_interest_rate = 3.0;
+    let interest_rate_decrease_frequency = 12;
 
     let comparison = loan::compare_simulations(
         loan_amount,
@@ -18,48 +21,31 @@ fn main() {
         installment_count,
         overpayment,
         start_date,
-        1.0,
-        24,
-        3.5,
+        interest_rate_decrease,
+        interest_rate_decrease_frequency,
+        minimum_interest_rate,
     );
 
     loan::display_simulation_result(&comparison.without_overpayments, "KREDYT BEZ NADPŁAT");
     println!("\n");
     loan::display_simulation_result(
         &comparison.with_overpayments,
-        &format!(
-            "KREDYT Z NADPŁATĄ {} ZŁ/MIESIĄC",
-            format_currency(overpayment)
-        ),
+        &format!("KREDYT Z NADPŁATĄ {} ZŁ/MIESIĄC", format_currency(overpayment)),
     );
 
     println!("\n=== PORÓWNANIE I KORZYŚCI ===");
     println!("Data rozpoczęcia: {}", start_date.format("%d.%m.%Y"));
-    println!(
-        "Data zakończenia bez nadpłat: {}",
-        comparison.without_overpayments.end_date.format("%d.%m.%Y")
-    );
-    println!(
-        "Data zakończenia z nadpłatami: {}",
-        comparison.with_overpayments.end_date.format("%d.%m.%Y")
-    );
+    println!("Data zakończenia bez nadpłat: {}", comparison.without_overpayments.end_date.format("%d.%m.%Y"));
+    println!("Data zakończenia z nadpłatami: {}", comparison.with_overpayments.end_date.format("%d.%m.%Y"));
 
-    let days_difference = (comparison.without_overpayments.end_date
-        - comparison.with_overpayments.end_date)
-        .num_days();
+    let days_difference = (comparison.without_overpayments.end_date - comparison.with_overpayments.end_date).num_days();
     println!(
         "Wcześniejsze zakończenie o: {} dni (~{:.1} lat)",
         days_difference,
         days_difference as f64 / 365.25
     );
-    println!(
-        "Całkowita nadpłata: {} zł",
-        format_currency(comparison.total_overpayment)
-    );
-    println!(
-        "Oszczędność na odsetkach: {} zł",
-        format_currency(comparison.interest_savings)
-    );
+    println!("Całkowita nadpłata: {} zł", format_currency(comparison.total_overpayment));
+    println!("Oszczędność na odsetkach: {} zł", format_currency(comparison.interest_savings));
     println!(
         "Skrócenie kredytu: {} lat {} miesięcy",
         comparison.loan_reduction_years, comparison.loan_reduction_months
