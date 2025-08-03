@@ -9,7 +9,7 @@ pub struct InstallmentInfo {
     // pub interest_rate: f64,
     pub interest: f64,
     pub principal: f64,
-    // pub overpayment: f64,
+    pub overpayment: f64,
     // pub remaining_balance: f64,
     // pub date: Option<NaiveDate>,
 }
@@ -105,7 +105,7 @@ pub fn simulate_loan(
             // interest_rate: current_interest_rate,
             interest,
             principal,
-            // overpayment,
+            overpayment,
             // remaining_balance: current_balance,
             // date: Some(start_date + Months::new(current_installment - 1)),
         };
@@ -195,11 +195,13 @@ pub fn display_simulation_result(result: &SimulationResult, title: &str) {
     println!("\nPierwsze 3 raty:");
     for installment in result.installments.iter().take(3) {
         println!(
-            "  Rata {:>3}: {} zł (odsetki: {} zł, kapitał: {} zł)",
+            "  Rata {:>3}: {} zł (odsetki: {} zł, kapitał: {} zł, nadpłata: {} zł, suma: {} zł)",
             installment.installment_number,
             format_currency(installment.installment_amount),
             format_currency(installment.interest),
-            format_currency(installment.principal)
+            format_currency(installment.principal),
+            format_currency(installment.overpayment),
+            format_currency(installment.installment_amount + installment.overpayment)
         );
     }
 
@@ -207,11 +209,13 @@ pub fn display_simulation_result(result: &SimulationResult, title: &str) {
     let start_index = result.installments.len().saturating_sub(3);
     for installment in result.installments.iter().skip(start_index) {
         println!(
-            "  Rata {:>3}: {} zł (odsetki: {} zł, kapitał: {} zł)",
+            "  Rata {:>3}: {} zł (odsetki: {} zł, kapitał: {} zł, nadpłata: {} zł, suma: {} zł)",
             installment.installment_number,
             format_currency(installment.installment_amount),
             format_currency(installment.interest),
-            format_currency(installment.principal)
+            format_currency(installment.principal),
+            format_currency(installment.overpayment),
+            format_currency(installment.installment_amount + installment.overpayment)
         );
     }
 }

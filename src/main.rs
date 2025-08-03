@@ -12,7 +12,7 @@ fn main() {
     let installment_count = 12 * 30;
     let overpayment = 5000.0;
     let interest_rate_decrease = 0.5;
-    let minimum_interest_rate = 3.0;
+    let minimum_interest_rate = 3.5;
     let interest_rate_decrease_frequency = 12;
 
     let comparison = loan::compare_simulations(
